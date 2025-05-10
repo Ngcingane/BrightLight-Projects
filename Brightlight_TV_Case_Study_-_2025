@@ -1,0 +1,41 @@
+SELECT * FROM BRIGHTLIGHT_TV_CASE_STUDY.PUBLIC.USER_PROFILES;
+-- TABLE 2  BRIGHTLIGHT_TV_CASE_STUDY.PUBLIC.VIEWERSHIP
+
+
+-- Joining my two tables_I get an error when converting the time then bucket it. DATEADD(hour, 2, A.Time_Tuned_In) AS Time_Tuned_In_SAST(South Africa),
+
+SELECT 
+  A.UserID,
+  A.Channel2,
+  A.Date_Watched,
+  A.Time_Tuned_In,
+  CASE
+        WHEN Time_Tuned_In >= '06:00:00'::TIME AND Time_Tuned_In < '12:00:00'::TIME THEN 'Morning'
+        WHEN Time_Tuned_In >= '12:00:00'::TIME AND Time_Tuned_In < '15:00:00'::TIME THEN 'Mid-Day'
+        WHEN Time_Tuned_In >= '15:00:00'::TIME AND Time_Tuned_In < '18:00:00'::TIME THEN 'Afternoon'
+        WHEN Time_Tuned_In >= '18:00:00'::TIME AND Time_Tuned_In < '21:00:00'::TIME THEN 'Evening'
+        WHEN Time_Tuned_In >= '21:00:00'::TIME AND Time_Tuned_In < '23:00:00'::TIME THEN 'Night'
+        WHEN Time_Tuned_In >= '23:00:00'::TIME OR Time_Tuned_In < '04:00:00'::TIME THEN 'Mid-Night'
+        ELSE 'Dawn'
+  END AS Watch_By_Time_Of_Day,
+  CASE
+    WHEN B.Age BETWEEN 0 AND 12 THEN 'Kids'
+    WHEN B.Age BETWEEN 13 AND 19 THEN 'Teenagers'
+    WHEN B.Age BETWEEN 20 AND 35 THEN 'Young Adult'
+    WHEN B.Age BETWEEN 36 AND 64 THEN 'Adult'
+    WHEN B.Age >= 65 THEN 'Mature Adult'
+    ELSE 'Unknown'
+  END AS Age_Group,
+  A.Watch_Duration,
+  REPLACE(B.Name, '�', '') AS Name,
+  REPLACE(B.Surname, '�', '') AS Surname,
+  REPLACE(B.Email, '�', '') AS Email,
+  B.Gender,
+  B.Race,
+  B.Age,
+  B.Province,
+  REPLACE(B.Social_Media_Handle, '�', '') AS Social_Media_Handle
+FROM BRIGHTLIGHT_TV_CASE_STUDY.PUBLIC.VIEWERSHIP AS A
+INNER JOIN BRIGHTLIGHT_TV_CASE_STUDY.PUBLIC.USER_PROFILES AS B
+  ON A.UserID = B.UserID
+ORDER BY A.Watch_Duration DESC;
